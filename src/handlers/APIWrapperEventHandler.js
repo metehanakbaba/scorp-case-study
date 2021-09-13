@@ -24,7 +24,7 @@ export class APIWrapperEventHandler {
 
   setEventHandler(events) {
     if (events.length)
-      events.forEach((event) => this.addEvent(event));
+      events.forEach(async (event) => await this.addEvent(event));
   }
 
   sortByTimestamp(queueCollection) {
