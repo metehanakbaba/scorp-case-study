@@ -6,8 +6,10 @@
     "serve": "npm start",
     "start": "live-server --port=8080 --no-browser public"
   },
-  "dependencies": {},
   "devDependencies": {
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "webpack": "^5.52.1",
+    "webpack-cli": "^4.8.0",
+    "webpack-dev-server": "^4.2.0"
   }
 }
