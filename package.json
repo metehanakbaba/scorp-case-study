@@ -2,11 +2,13 @@
   "name": "web-feb-2021",
   "version": "0.1.0",
   "scripts": {
-    "dev": "npm start",
-    "serve": "npm start",
-    "start": "live-server --port=8080 --no-browser public"
+    "clean": "rm dist/",
+    "dev": "webpack serve --mode development",
+    "build-dev": "clean && webpack --mode development",
+    "build-prod": "clean && webpack --mode production"
   },
   "devDependencies": {
+    "copy-webpack-plugin": "^9.0.1",
     "live-server": "^1.2.1",
     "webpack": "^5.52.1",
     "webpack-cli": "^4.8.0",
