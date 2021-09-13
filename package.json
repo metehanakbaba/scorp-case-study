@@ -2,9 +2,9 @@
   "name": "scorp-case-study",
   "version": "1.0.0",
   "scripts": {
-    "clean": "rm dist/",
+    "clean": "rm -rf dist/",
     "dev": "webpack serve --mode development",
-    "build": "clean && webpack --mode production"
+    "build": "npm run clean && webpack --mode production"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",
