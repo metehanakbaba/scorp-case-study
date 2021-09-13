@@ -1,11 +1,10 @@
 {
-  "name": "web-feb-2021",
-  "version": "0.1.0",
+  "name": "scorp-case-study",
+  "version": "1.0.0",
   "scripts": {
     "clean": "rm dist/",
     "dev": "webpack serve --mode development",
-    "build-dev": "clean && webpack --mode development",
-    "build-prod": "clean && webpack --mode production"
+    "build": "clean && webpack --mode production"
   },
   "devDependencies": {
     "copy-webpack-plugin": "^9.0.1",

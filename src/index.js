@@ -1,5 +1,12 @@
+import ApplicationCore from "./ApplicationCore";
+import ClientEventHandler from "./handlers/ClientEventHandler";
 import { APIWrapper } from './lib/api';
-import { APIWrapperEventHandler } from "./handlers/APIWrapperEventHandler";
 
-export const apiEventHandler = new APIWrapperEventHandler();
-(new APIWrapper()).setEventHandler(events => apiEventHandler.setEventHandler(events));
+const ApplicationCoreExport = new ApplicationCore();
+(new APIWrapper()).setEventHandler(events => ApplicationCoreExport.setEventHandler(events));
+
+export default ApplicationCoreExport;
+
+ClientEventHandler();
+
+

@@ -10,6 +10,7 @@ class Collection {
   sortByCondition(condition) {
     this.storage.sort(condition);
   }
+
   sliceByCondition(property, condition) {
     for (let i = 0; i < this.storage.length; i++) {
       if (condition(this.storage[i][property])) {

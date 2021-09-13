@@ -1,11 +1,20 @@
-import { API_EVENT_TYPE, } from '../lib/api';
-import { QueueCollection } from '../utils/QueueCollection';
+import EventReactor from "./lib/EventReactor";
+import { QueueCollection } from './lib/QueueCollection';
+import { API_EVENT_TYPE } from './lib/api';
+import { API_QUEUE_NAME } from './consts/event'
 
-export class APIWrapperEventHandler {
+
+export default class ApplicationCore {
   constructor() {
     this.events = new Set();
     this.messageEventQueue = new QueueCollection();
     this.animatedGiftEventQueue = new QueueCollection();
+    this.eventReactor = new EventReactor();
+    this.registerEvents()
+  }
+
+  registerEvents () {
+    this.eventReactor.registerEvent(API_QUEUE_NAME)
   }
 
   async addEvent(event) {
@@ -19,18 +28,19 @@ export class APIWrapperEventHandler {
         this.messageEventQueue : this.animatedGiftEventQueue
 
     await eventQueue.enqueue(event);
+    this.eventReactor.dispatchEvent(API_QUEUE_NAME);
+
     this.sortByTimestamp(eventQueue)
   }
 
   setEventHandler(events) {
-    if (events.length)
-      events.forEach(async (event) => await this.addEvent(event));
+    events.filter(item => item.id)
+          .forEach(async (event) => await this.addEvent(event));
   }
 
   sortByTimestamp(queueCollection) {
     const condition = (first, second) => first.timestamp - second.timestamp
     queueCollection.sortByCondition(condition);
   }
-
 
 }
