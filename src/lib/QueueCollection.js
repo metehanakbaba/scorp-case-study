@@ -10,24 +10,13 @@ class Collection {
   sortByCondition(condition) {
     this.storage.sort(condition);
   }
-
-  sliceByCondition(property, condition) {
-    for (let i = 0; i < this.storage.length; i++) {
-      if (condition(this.storage[i][property])) {
-        if (i - 1 > 0) {
-          this.storage.slice(i - 1);
-        }
-        break;
-      }
-    }
-
-  }
 }
 
 export class QueueCollection extends Collection {
   constructor(capacity = Infinity) {
     super();
     this.capacity = capacity;
+    this.progress = false
   }
 
   enqueue(item) {
@@ -42,6 +31,14 @@ export class QueueCollection extends Collection {
 
   dequeue() {
     return this.storage.shift();
+  }
+
+  isQueueProgress() {
+    return this.progress
+  }
+
+  setQueueProgress(status) {
+    this.progress = status
   }
 
   isFull() {

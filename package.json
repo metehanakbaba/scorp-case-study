@@ -1,6 +1,6 @@
 {
   "name": "scorp-case-study",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "scripts": {
     "clean": "rm -rf dist/",
     "dev": "webpack serve --mode development",

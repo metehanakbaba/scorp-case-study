@@ -1,7 +1,7 @@
 import EventReactor from "./lib/EventReactor";
 import { QueueCollection } from './lib/QueueCollection';
 import { API_EVENT_TYPE } from './lib/api';
-import { API_QUEUE_NAME } from './consts/event'
+import { API_ANIMATED_GIFT_HANDLER, API_MESSAGE_HANDLER } from './consts/event'
 
 
 export default class ApplicationCore {
@@ -14,7 +14,8 @@ export default class ApplicationCore {
   }
 
   registerEvents () {
-    this.eventReactor.registerEvent(API_QUEUE_NAME)
+    this.eventReactor.registerEvent(API_MESSAGE_HANDLER)
+    this.eventReactor.registerEvent(API_ANIMATED_GIFT_HANDLER)
   }
 
   async addEvent(event) {
@@ -23,17 +24,17 @@ export default class ApplicationCore {
       return;
     this.events.add(id);
 
-    const eventQueue =
-      type === API_EVENT_TYPE.GIFT || type === API_EVENT_TYPE.MESSAGE ?
-        this.messageEventQueue : this.animatedGiftEventQueue
+    const messageEventType = type === API_EVENT_TYPE.GIFT || type === API_EVENT_TYPE.MESSAGE
+    const eventQueue = messageEventType ? this.messageEventQueue : this.animatedGiftEventQueue
 
     await eventQueue.enqueue(event);
-    this.eventReactor.dispatchEvent(API_QUEUE_NAME);
-
     this.sortByTimestamp(eventQueue)
+    this.eventReactor.dispatchEvent(
+      messageEventType ? API_MESSAGE_HANDLER : API_ANIMATED_GIFT_HANDLER
+    );
   }
 
-  setEventHandler(events) {
+  mergeApiEventHandler(events) {
     events.filter(item => item.id)
           .forEach(async (event) => await this.addEvent(event));
   }
