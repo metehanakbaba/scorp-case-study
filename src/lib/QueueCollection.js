@@ -8,7 +8,11 @@ class Collection {
   }
 
   sortByCondition(condition) {
-    this.storage.sort(condition);
+    this.storage = this.storage.sort(condition);
+  }
+
+  filterByCondition(condition) {
+    this.storage = this.storage.filter(condition);
   }
 }
 

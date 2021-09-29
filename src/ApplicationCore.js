@@ -6,11 +6,10 @@ import { API_ANIMATED_GIFT_HANDLER, API_MESSAGE_HANDLER } from './consts/event'
 
 export default class ApplicationCore {
   constructor(executeBufferTime, eventShowTimeout) {
-    this.executeBufferTime = (Date).now() + executeBufferTime;
+    this.executeBufferTime = executeBufferTime;
     this.events = new Set();
     this.messageEventQueue = new QueueCollection();
     this.animatedGiftEventQueue = new QueueCollection();
-    this.apiQueue = new QueueCollection();
     this.eventReactor = new EventReactor();
     this.registerEvents()
     this.sendEventsFromApiQueue(eventShowTimeout)
@@ -24,9 +23,11 @@ export default class ApplicationCore {
   sendEventsFromApiQueue(timeout) {
     setInterval(() => {
       try {
-        const event = this.apiQueue.dequeue()
-        if (event) {
-          this.addEvent(event)
+        if (this.messageEventQueue.size()) {
+          this.eventReactor.dispatchEvent(API_MESSAGE_HANDLER);
+        }
+        if (this.animatedGiftEventQueue.size()) {
+          this.eventReactor.dispatchEvent(API_ANIMATED_GIFT_HANDLER);
         }
       } catch (e) {
         // LOGGING
@@ -44,22 +45,13 @@ export default class ApplicationCore {
     const eventQueue = messageEventType ? this.messageEventQueue : this.animatedGiftEventQueue
 
     await eventQueue.enqueue(event);
-    this.sortByTimestamp(eventQueue)
-    this.eventReactor.dispatchEvent(
-      messageEventType ? API_MESSAGE_HANDLER : API_ANIMATED_GIFT_HANDLER
-    );
+
+    eventQueue.sortByCondition((first, second) => first.timestamp - second.timestamp)
   }
 
   async mergeApiEventHandler(events) {
-    await this.apiQueue.enqueue(
-              ...events.filter(({ id }) => id)
-                .filter(({ timestamp }) => timestamp.getTime() > this.executeBufferTime)
-            )
-  }
-
-  sortByTimestamp(queueCollection) {
-    const condition = (first, second) => first.timestamp - second.timestamp
-    queueCollection.sortByCondition(condition);
+    return events.filter(({ id }) => id)
+      .forEach(event => this.addEvent(event))
   }
 
 }
