@@ -5,17 +5,33 @@ import { API_ANIMATED_GIFT_HANDLER, API_MESSAGE_HANDLER } from './consts/event'
 
 
 export default class ApplicationCore {
-  constructor() {
+  constructor(executeBufferTime, eventShowTimeout) {
+    this.executeBufferTime = (Date).now() + executeBufferTime;
     this.events = new Set();
     this.messageEventQueue = new QueueCollection();
     this.animatedGiftEventQueue = new QueueCollection();
+    this.apiQueue = new QueueCollection();
     this.eventReactor = new EventReactor();
     this.registerEvents()
+    this.sendEventsFromApiQueue(eventShowTimeout)
   }
 
   registerEvents () {
     this.eventReactor.registerEvent(API_MESSAGE_HANDLER)
     this.eventReactor.registerEvent(API_ANIMATED_GIFT_HANDLER)
+  }
+
+  sendEventsFromApiQueue(timeout) {
+    setInterval(() => {
+      try {
+        const event = this.apiQueue.dequeue()
+        if (event) {
+          this.addEvent(event)
+        }
+      } catch (e) {
+        // LOGGING
+      }
+    }, timeout)
   }
 
   async addEvent(event) {
@@ -34,9 +50,11 @@ export default class ApplicationCore {
     );
   }
 
-  mergeApiEventHandler(events) {
-    events.filter(item => item.id)
-          .forEach(async (event) => await this.addEvent(event));
+  async mergeApiEventHandler(events) {
+    await this.apiQueue.enqueue(
+              ...events.filter(({ id }) => id)
+                .filter(({ timestamp }) => timestamp.getTime() > this.executeBufferTime)
+            )
   }
 
   sortByTimestamp(queueCollection) {

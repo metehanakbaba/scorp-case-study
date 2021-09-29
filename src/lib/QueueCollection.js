@@ -19,12 +19,12 @@ export class QueueCollection extends Collection {
     this.progress = false
   }
 
-  enqueue(item) {
+  enqueue(...item) {
     return new Promise((resolve, reject) => {
       if (this.isFull()) {
         reject("Queue is full.")
       }
-      this.storage.push(item);
+      this.storage.push(...item);
       resolve(true)
     })
   }
